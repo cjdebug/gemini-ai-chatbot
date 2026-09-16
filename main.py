@@ -15,7 +15,17 @@ while True:
 
     command = user_message.strip().lower()
 
-    if command in ["/exit , exit"]:
+    if not command:
+        print("Please enter a message.")
+        continue
+    
+    if command in ["/help" , "help"]:
+        print("\nAvailable commands: ")
+        print("/help - Show available commands")
+        print("/exit - Exit the Chatbot")
+        continue
+
+    if command in ["/exit" , "exit"]:
         print("Gemini: Goodbye!")
         break
 
