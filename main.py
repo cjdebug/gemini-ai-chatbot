@@ -1,6 +1,7 @@
 from google import genai
 from google.genai import errors
 import json
+import os
 
 print("==============================")
 print("     Gemini AI Chatbot")
@@ -9,16 +10,34 @@ print("==============================")
 try:
     client = genai.Client()
 
-    chat = client.chats.create(
-        model="gemini-3.6-flash"
-    )
-
 except ValueError:
     print("Error: Gemini API key not found.")
     print("Please configure GEMINI_API_KEY and try again.")
     exit()
 
-history = []
+if os.path.exists("chat_history.json"):
+    with open("chat_history.json", "r", encoding="utf-8") as file:
+        history = json.load(file)
+
+else:
+    history = []
+
+gemini_history = []
+
+for message in history:
+    gemini_history.append({
+        "role": "model" if message["role"] == "gemini" else "user",
+        "parts": [
+            {
+                "text": message["message"]
+            }
+        ]
+    })
+
+chat = client.chats.create(
+        model="gemini-3.6-flash",
+        history = gemini_history
+    )
 
 while True:
     user_message = input("\nYou: ")
