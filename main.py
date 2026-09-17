@@ -1,5 +1,6 @@
 from google import genai
 from google.genai import errors
+import json
 
 print("==============================")
 print("     Gemini AI Chatbot")
@@ -16,6 +17,8 @@ except ValueError:
     print("Error: Gemini API key not found.")
     print("Please configure GEMINI_API_KEY and try again.")
     exit()
+
+history = []
 
 while True:
     user_message = input("\nYou: ")
@@ -35,6 +38,11 @@ while True:
     if command in ["/exit" , "exit"]:
         print("Gemini: Goodbye!")
         break
+    
+    history.append({
+        "role": "user",
+        "message": user_message
+    })
 
     try:
         response = chat.send_message(
@@ -42,6 +50,14 @@ while True:
         )
 
         print("\nGemini: ", response.text)
+
+        history.append({
+            "role": "gemini",
+            "message": response.text
+        })
+
+        with open("chat_history.json", "w", encoding="utf-8") as file:
+            json.dump(history, file, indent=4, ensure_ascii=False)
 
     except errors.APIError as error:
         if error.code == 503:
