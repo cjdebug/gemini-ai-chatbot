@@ -1,7 +1,6 @@
 from google import genai
 from google.genai import errors
-import json
-import os
+from history import load_history, save_history
 
 print("==============================")
 print("     Gemini AI Chatbot")
@@ -15,12 +14,7 @@ except ValueError:
     print("Please configure GEMINI_API_KEY and try again.")
     exit()
 
-if os.path.exists("chat_history.json"):
-    with open("chat_history.json", "r", encoding="utf-8") as file:
-        history = json.load(file)
-
-else:
-    history = []
+history = load_history()
 
 gemini_history = []
 
@@ -75,9 +69,8 @@ while True:
             "message": response.text
         })
 
-        with open("chat_history.json", "w", encoding="utf-8") as file:
-            json.dump(history, file, indent=4, ensure_ascii=False)
-
+        save_history(history)
+        
     except errors.APIError as error:
         if error.code == 503:
             print("\nGemini is temporarily unavailable.")
